@@ -1,0 +1,58 @@
+{
+  "os": "Linux-6.1.85+-x86_64-with-glibc2.35",
+  "python": "CPython 3.11.11",
+  "startedAt": "2025-04-04T13:55:50.903129Z",
+  "args": [
+    "config/train_don_char.py",
+    "--device=cpu",
+    "--out_dir=out-don-small-char",
+    "--compile=False",
+    "--eval_iters=20",
+    "--log_interval=50",
+    "--block_size=64",
+    "--batch_size=12",
+    "--n_layer=4",
+    "--n_head=4",
+    "--n_embd=128",
+    "--max_iters=1000",
+    "--lr_decay_iters=1000",
+    "--dropout=0.0"
+  ],
+  "program": "/content/DI725/assignment_1/train.py",
+  "codePath": "assignment_1/train.py",
+  "git": {
+    "remote": "https://github.com/caglarmert/DI725.git",
+    "commit": "c53c0b64c2260ad6c1b1fca87af47dc78e837448"
+  },
+  "email": "ayca.kurkcuu@gmail.com",
+  "root": "/content/DI725/assignment_1",
+  "host": "866741d016f1",
+  "executable": "/usr/bin/python3",
+  "codePathLocal": "train.py",
+  "cpu_count": 6,
+  "cpu_count_logical": 12,
+  "gpu": "NVIDIA L4",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "253055008768",
+      "used": "44119977984"
+    }
+  },
+  "memory": {
+    "total": "56866914304"
+  },
+  "cpu": {
+    "count": 6,
+    "countLogical": 12
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA L4",
+      "memoryTotal": "24152899584",
+      "cudaCores": 7424,
+      "architecture": "Ada"
+    }
+  ],
+  "cudaVersion": "12.4"
+}

@@ -1,0 +1,30 @@
+step 0: train loss 4.6318, val loss 4.6267
+iter 0: loss 4.6369, time 938.93ms, mfu -100.00%
+iter 50: loss 3.0634, time 26.93ms, mfu 0.05%
+iter 100: loss 2.5703, time 28.76ms, mfu 0.05%
+iter 150: loss 2.5330, time 24.32ms, mfu 0.05%
+iter 200: loss 2.4210, time 24.50ms, mfu 0.05%
+step 250: train loss 2.4280, val loss 2.4708
+saving checkpoint to out-don-small-char
+iter 250: loss 2.4473, time 396.93ms, mfu 0.04%
+iter 300: loss 2.3492, time 33.38ms, mfu 0.04%
+iter 350: loss 2.3467, time 25.00ms, mfu 0.04%
+iter 400: loss 2.2370, time 24.71ms, mfu 0.04%
+iter 450: loss 2.1366, time 24.15ms, mfu 0.05%
+step 500: train loss 2.1847, val loss 2.2207
+saving checkpoint to out-don-small-char
+iter 500: loss 2.2122, time 328.63ms, mfu 0.04%
+iter 550: loss 2.2096, time 25.69ms, mfu 0.04%
+iter 600: loss 1.9519, time 24.46ms, mfu 0.04%
+iter 650: loss 2.1256, time 24.55ms, mfu 0.04%
+iter 700: loss 2.0701, time 24.71ms, mfu 0.04%
+step 750: train loss 2.0157, val loss 2.0895
+saving checkpoint to out-don-small-char
+iter 750: loss 1.9982, time 383.64ms, mfu 0.04%
+iter 800: loss 1.9459, time 32.54ms, mfu 0.04%
+iter 850: loss 2.0410, time 25.56ms, mfu 0.04%
+iter 900: loss 2.0272, time 25.13ms, mfu 0.04%
+iter 950: loss 1.9894, time 24.15ms, mfu 0.04%
+step 1000: train loss 1.9351, val loss 1.9995
+saving checkpoint to out-don-small-char
+iter 1000: loss 1.9236, time 324.87ms, mfu 0.04%

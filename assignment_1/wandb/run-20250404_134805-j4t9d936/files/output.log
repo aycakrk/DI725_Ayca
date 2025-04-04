@@ -1,0 +1,58 @@
+step 0: train loss 4.7824, val loss 4.7815
+iter 0: loss 4.7676, time 8580.13ms, mfu -100.00%
+iter 50: loss 2.4701, time 54.72ms, mfu 6.82%
+iter 100: loss 2.4311, time 55.40ms, mfu 6.81%
+iter 150: loss 2.3829, time 55.72ms, mfu 6.80%
+iter 200: loss 2.2172, time 55.70ms, mfu 6.79%
+step 250: train loss 1.9437, val loss 1.9996
+saving checkpoint to out-don-char
+iter 250: loss 2.0279, time 7845.47ms, mfu 6.11%
+iter 300: loss 1.8915, time 55.14ms, mfu 6.18%
+iter 350: loss 1.7833, time 54.95ms, mfu 6.24%
+iter 400: loss 1.7048, time 55.45ms, mfu 6.29%
+iter 450: loss 1.6623, time 56.48ms, mfu 6.32%
+step 500: train loss 1.5288, val loss 1.6098
+saving checkpoint to out-don-char
+iter 500: loss 1.6179, time 8014.17ms, mfu 5.69%
+iter 550: loss 1.5621, time 55.04ms, mfu 5.80%
+iter 600: loss 1.5272, time 55.52ms, mfu 5.89%
+iter 650: loss 1.4959, time 57.86ms, mfu 5.95%
+iter 700: loss 1.4545, time 58.72ms, mfu 5.99%
+step 750: train loss 1.3482, val loss 1.4445
+saving checkpoint to out-don-char
+iter 750: loss 1.4331, time 8191.74ms, mfu 5.40%
+iter 800: loss 1.3906, time 55.62ms, mfu 5.53%
+iter 850: loss 1.4595, time 57.19ms, mfu 5.63%
+iter 900: loss 1.3178, time 57.17ms, mfu 5.72%
+iter 950: loss 1.3429, time 59.57ms, mfu 5.77%
+step 1000: train loss 1.2471, val loss 1.3598
+saving checkpoint to out-don-char
+iter 1000: loss 1.3100, time 8321.94ms, mfu 5.20%
+iter 1050: loss 1.2997, time 57.03ms, mfu 5.33%
+iter 1100: loss 1.2615, time 55.53ms, mfu 5.47%
+iter 1150: loss 1.2593, time 58.66ms, mfu 5.56%
+iter 1200: loss 1.2570, time 58.46ms, mfu 5.64%
+step 1250: train loss 1.1781, val loss 1.3072
+saving checkpoint to out-don-char
+iter 1250: loss 1.2615, time 8450.61ms, mfu 5.08%
+iter 1300: loss 1.2348, time 59.69ms, mfu 5.20%
+iter 1350: loss 1.2365, time 60.83ms, mfu 5.29%
+iter 1400: loss 1.2255, time 61.50ms, mfu 5.37%
+iter 1450: loss 1.2328, time 60.34ms, mfu 5.45%
+step 1500: train loss 1.1380, val loss 1.2797
+saving checkpoint to out-don-char
+iter 1500: loss 1.2086, time 8469.80ms, mfu 4.91%
+iter 1550: loss 1.1733, time 62.25ms, mfu 5.02%
+iter 1600: loss 1.2214, time 62.11ms, mfu 5.12%
+iter 1650: loss 1.1860, time 62.59ms, mfu 5.20%
+iter 1700: loss 1.1865, time 59.96ms, mfu 5.30%
+step 1750: train loss 1.1063, val loss 1.2503
+saving checkpoint to out-don-char
+iter 1750: loss 1.1654, time 8473.68ms, mfu 4.78%
+iter 1800: loss 1.1518, time 63.94ms, mfu 4.88%
+iter 1850: loss 1.1563, time 62.23ms, mfu 5.00%
+iter 1900: loss 1.1911, time 61.82ms, mfu 5.10%
+iter 1950: loss 1.1752, time 60.87ms, mfu 5.20%
+step 2000: train loss 1.0905, val loss 1.2437
+saving checkpoint to out-don-char
+iter 2000: loss 1.1672, time 8461.85ms, mfu 4.69%
