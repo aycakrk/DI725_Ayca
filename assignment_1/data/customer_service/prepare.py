@@ -3,103 +3,93 @@ import pandas as pd
 import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
+import string
 
-# Step 1: Define a function to extract only customer messages
+# 1) Yardımcı fonksiyonlar
 def extract_customer_messages(text):
     lines = text.split('\n')
     customer_lines = [line for line in lines if line.lower().startswith('customer:')]
     return ' '.join(customer_lines).replace('customer: ', '')
 
-# Step 2: Define a function to map sentiment labels to integers
 def map_labels(labels):
     label_to_int = {'negative': 0, 'neutral': 1, 'positive': 2}
     return [label_to_int[label] for label in labels]
 
-# Step 3: Define a function to encode text using character-to-integer mapping
 def encode(s, stoi):
     return [stoi[c] for c in s if c in stoi]
 
-# Step 4: Load training dataset
+def decode(ids, itos):
+    return ''.join([itos[i] for i in ids if i in itos])
+
+# 2) CSV dosyalarını oku
 train_data_path = '/content/DI725_Ayca/assignment_1/data/customer_service/cleaned_train.csv'
+test_data_path  = '/content/DI725_Ayca/assignment_1/data/customer_service/cleaned_test.csv'
+
 train_df = pd.read_csv(train_data_path)
+test_df  = pd.read_csv(test_data_path)
 
-# Apply filtering step (Extract only customer messages)
+# 3) Sadece müşteri mesajlarını ayıkla
 train_df['filtered_conversation'] = train_df['cleaned_conversation'].apply(extract_customer_messages)
+test_df['filtered_conversation']  = test_df['cleaned_conversation'].apply(extract_customer_messages)
 
-train_data = train_df['filtered_conversation'].tolist()
+train_texts = train_df['filtered_conversation'].tolist()
+test_texts  = test_df['filtered_conversation'].tolist()
+
+# 4) Etiketleri integer'a çevir
 train_labels = map_labels(train_df['customer_sentiment'].tolist())
+test_labels  = map_labels(test_df['customer_sentiment'].tolist())
 
-# Step 5: Load test dataset
-test_data_path = '/content/DI725_Ayca/assignment_1/data/customer_service/cleaned_test.csv'
-test_df = pd.read_csv(test_data_path)
-
-# Apply filtering step
-test_df['filtered_conversation'] = test_df['cleaned_conversation'].apply(extract_customer_messages)
-
-test_data = test_df['filtered_conversation'].tolist()
-test_labels = map_labels(test_df['customer_sentiment'].tolist())
-
-# Step 6: Create a mapping from characters to integers and vice versa
-import string
-
-# New way to generate the character set
-# Adding all common characters including uppercase, lowercase, punctuation, and digits
-all_possible_chars = string.ascii_letters + string.punctuation + string.digits + ' \n'  # Including space and newline
-chars = sorted(list(set(''.join(train_data + test_data) + all_possible_chars)))  # Combine with your data
-
-# Create your mappings as usual
+# 5) Karakter kümesi oluştur (vocab)
+all_possible_chars = string.ascii_letters + string.punctuation + string.digits + ' \n'
+chars = sorted(list(set(''.join(train_texts + test_texts) + all_possible_chars)))
 vocab_size = len(chars)
 stoi = {ch: i for i, ch in enumerate(chars)}
 itos = {i: ch for i, ch in enumerate(chars)}
 
+# 6) Train ve Test verisini encode et
+encoded_train_data = [encode(text, stoi) for text in train_texts]
+encoded_test_data  = [encode(text, stoi) for text in test_texts]
 
-# Step 7: Encode the data
-encoded_train_data = [encode(text, stoi) for text in train_data]
-encoded_test_data = [encode(text, stoi) for text in test_data]
-
-# Step 8: Split training data into training and validation sets
+# 7) Train'i train/val'e böl
 train_data, val_data, train_labels, val_labels = train_test_split(
-    encoded_train_data, train_labels, test_size=0.1, stratify=train_labels, random_state=42)
+    encoded_train_data,
+    train_labels,
+    test_size=0.1,
+    stratify=train_labels,
+    random_state=42
+)
 
-# Step 9: Save data without padding (Each conversation is saved individually)
+# 8) Kayıt yeri
 output_dir = '/content/DI725_Ayca/assignment_1/data/customer_service/'
+os.makedirs(output_dir, exist_ok=True)
 
-# Save training data properly (each conversation separately)
-with open(os.path.join(output_dir, 'train_data.bin'), 'wb') as f:
-    for conversation in train_data:
-        length = len(conversation)
-        np.array([length], dtype=np.uint16).tofile(f)  # Save length of conversation first
-        np.array(conversation, dtype=np.uint16).tofile(f)
+# A) Train konuşmaları "object array" haline getirip .npy kaydet
+train_data_obj = np.array(train_data, dtype=object)
+np.save(os.path.join(output_dir, 'train_data.npy'), train_data_obj, allow_pickle=True)
 
-# Save validation data properly
-with open(os.path.join(output_dir, 'val_data.bin'), 'wb') as f:
-    for conversation in val_data:
-        length = len(conversation)
-        np.array([length], dtype=np.uint16).tofile(f)
-        np.array(conversation, dtype=np.uint16).tofile(f)
+train_labels_arr = np.array(train_labels, dtype=np.uint16)  # Etiketler sabit boyutlu -> normal array
+np.save(os.path.join(output_dir, 'train_labels.npy'), train_labels_arr)
 
-# Save test data properly
-with open(os.path.join(output_dir, 'test_data.bin'), 'wb') as f:
-    for conversation in encoded_test_data:
-        length = len(conversation)
-        np.array([length], dtype=np.uint16).tofile(f)
-        np.array(conversation, dtype=np.uint16).tofile(f)
+# B) Validation konuşmaları
+val_data_obj = np.array(val_data, dtype=object)
+np.save(os.path.join(output_dir, 'val_data.npy'), val_data_obj, allow_pickle=True)
 
+val_labels_arr = np.array(val_labels, dtype=np.uint16)
+np.save(os.path.join(output_dir, 'val_labels.npy'), val_labels_arr)
 
-# Save labels as binary files
-np.array(train_labels, dtype=np.uint16).tofile(os.path.join(output_dir, 'train_labels.bin'))
-np.array(val_labels, dtype=np.uint16).tofile(os.path.join(output_dir, 'val_labels.bin'))
-np.array(test_labels, dtype=np.uint16).tofile(os.path.join(output_dir, 'test_labels.bin'))
+# C) Test konuşmaları
+test_data_obj = np.array(encoded_test_data, dtype=object)
+np.save(os.path.join(output_dir, 'test_data.npy'), test_data_obj, allow_pickle=True)
 
-# Step 10: Save the meta information (character mapping)
+test_labels_arr = np.array(test_labels, dtype=np.uint16)
+np.save(os.path.join(output_dir, 'test_labels.npy'), test_labels_arr)
+
+# 9) Meta bilgileri (vocab, stoi vs.)
 meta = {'vocab_size': vocab_size, 'itos': itos, 'stoi': stoi}
 with open(os.path.join(output_dir, 'meta.pkl'), 'wb') as f:
     pickle.dump(meta, f)
 
-# Optional: Check encoding and decoding process
-def decode(ids, itos):
-    return ''.join([itos[i] for i in ids if i in itos])
-
+# 10) Basit kontrol
 sample_text = "Test encoding and decoding!"
 encoded_text = encode(sample_text, stoi)
 decoded_text = decode(encoded_text, itos)
