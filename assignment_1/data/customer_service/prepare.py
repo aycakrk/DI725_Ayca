@@ -6,10 +6,36 @@ from sklearn.model_selection import train_test_split
 import string
 
 # 1) Yardımcı fonksiyonlar
+import re
+
 def extract_customer_messages(text):
-    lines = text.split('\n')
-    customer_lines = [line for line in lines if line.lower().startswith('customer:')]
-    return ' '.join(customer_lines).replace('customer: ', '')
+    # Bu regex "customer:" ifadesini bulacak ve ardından gelenleri 
+    # "agent:" veya metin sonuna kadar yakalayacak
+    pattern = re.compile(r'(?i)customer:(.*?)(?=agent:|$)', re.DOTALL)
+    """
+    Açıklama:
+    - (?i)  : case-insensitive
+    - customer: ifadesini bul
+    - (.*?)  : sonrasındaki her şeyi, 
+    - (?=agent:|$) : bir sonraki 'agent:' veya metin sonuna ($) gelene kadar yakala
+    - re.DOTALL  : . karakteri \n dahil her şeyi temsil etsin
+    """
+    matches = pattern.findall(text)
+
+    # matches bir dizi string döndürecek; her string "customer:"dan 
+    # "agent:"a kadarki kısım (veya satır sonuna kadar)
+    # Bu kısımlar "customer:" ifadesi olmadan yakalanacak
+    # isterseniz .strip() ile boşlukları temizleyebilirsiniz.
+    cleaned_segments = []
+    for seg in matches:
+        # seg "hi tom im trying to log in..." gibi müşteri mesajını tutar
+        seg = seg.strip()
+        cleaned_segments.append(seg)
+
+    # Tüm "customer" bölümlerini tek bir metinde birleştirmek isterseniz:
+    return ' '.join(cleaned_segments)
+
+
 
 def map_labels(labels):
     label_to_int = {'negative': 0, 'neutral': 1, 'positive': 2}
