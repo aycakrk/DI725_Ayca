@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/content/DI725_Ayca/assignment_1/train.py", line 257, in <module>
+    X, Y, sentiment_labels = get_batch('train') # Fetch first batch
+                             ^^^^^^^^^^^^^^^^^^
+  File "/content/DI725_Ayca/assignment_1/train.py", line 119, in get_batch
+    labels = np.memmap(os.path.join(data_dir, '/content/DI725_Ayca/assignment_1/data/customer_service/train_labels.bin'), dtype=np.int32, mode='r')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/numpy/_core/memmap.py", line 247, in __new__
+    raise ValueError("Size of available data is not a "
+ValueError: Size of available data is not a multiple of the data-type size.

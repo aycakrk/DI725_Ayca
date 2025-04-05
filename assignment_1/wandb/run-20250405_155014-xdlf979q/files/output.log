@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/content/DI725_Ayca/assignment_1/train.py", line 269, in <module>
+    losses = estimate_loss()
+             ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/content/DI725_Ayca/assignment_1/train.py", line 228, in estimate_loss
+    X, Y = get_batch(split)
+    ^^^^
+ValueError: too many values to unpack (expected 2)

@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/content/DI725_Ayca/assignment_1/train.py", line 257, in <module>
+    X, Y, sentiment_labels = get_batch('train') # Fetch first batch
+                             ^^^^^^^^^^^^^^^^^^
+  File "/content/DI725_Ayca/assignment_1/train.py", line 129, in get_batch
+    sentiment_labels = torch.tensor([labels[i] for i in ix], dtype=torch.long)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/DI725_Ayca/assignment_1/train.py", line 129, in <listcomp>
+    sentiment_labels = torch.tensor([labels[i] for i in ix], dtype=torch.long)
+                                     ~~~~~~^^^
+  File "/usr/local/lib/python3.11/dist-packages/numpy/_core/memmap.py", line 348, in __getitem__
+    res = super().__getitem__(index)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: index 6283 is out of bounds for axis 0 with size 873

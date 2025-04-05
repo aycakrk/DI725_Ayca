@@ -1,0 +1,35 @@
+{
+  "os": "Linux-6.1.85+-x86_64-with-glibc2.35",
+  "python": "CPython 3.11.11",
+  "startedAt": "2025-04-05T15:58:26.491935Z",
+  "args": [
+    "/content/DI725_Ayca/assignment_1/config/train_customer.py",
+    "--compile=False"
+  ],
+  "program": "/content/DI725_Ayca/assignment_1/train.py",
+  "codePath": "assignment_1/train.py",
+  "git": {
+    "remote": "https://github.com/aycakrk/DI725_Ayca.git",
+    "commit": "96dae4b87b899cd9e9c65d8f429e5c53abfe62b3"
+  },
+  "email": "ayca.kurkcuu@gmail.com",
+  "root": "/content/DI725_Ayca/assignment_1",
+  "host": "c5ffcdd9d7a2",
+  "executable": "/usr/bin/python3",
+  "codePathLocal": "train.py",
+  "cpu_count": 1,
+  "cpu_count_logical": 2,
+  "disk": {
+    "/": {
+      "total": "242486079488",
+      "used": "39674548224"
+    }
+  },
+  "memory": {
+    "total": "13609431040"
+  },
+  "cpu": {
+    "count": 1,
+    "countLogical": 2
+  }
+}
