@@ -7,10 +7,10 @@ import random
 import numpy as np
 import torch
 
-from model_weighted_loss import GPT, GPTConfig
+from model import GPT, GPTConfig
 
 #####################################
-# Veri Yükleme & Batch İşlemleri
+# Veri Yükleme & Batch İşlemleri 
 #####################################
 def load_data(data_dir):
     train_data = np.load(os.path.join(data_dir, 'train_data.npy'), allow_pickle=True)
@@ -49,52 +49,60 @@ def get_batch_conversations(data_list, labels_list, batch_size, block_size, devi
     return X_torch, Y_torch, S_torch
 
 #####################################
-# Eğitim & Doğrulama Fonksiyonları
+# Test Değerlendirme Fonksiyonu
 #####################################
-def estimate_loss(model, data_list, labels_list, batch_size, block_size, device, eval_iters=50):
+def evaluate_model_on_test(model, test_data, test_labels, block_size, device):
     model.eval()
-    losses = []
-    for _ in range(eval_iters):
-        X, Y, S = get_batch_conversations(data_list, labels_list, batch_size, block_size, device)
-        with torch.no_grad():
-            _, _, loss = model(X, sentiment_labels=S, targets=Y)
-        losses.append(loss.item())
-    model.train()
-    return float(np.mean(losses))
+    preds = []
+    gts = []
+    with torch.no_grad():
+        for i in range(len(test_data)):
+            tokens = test_data[i]
+            label = test_labels[i]
+            if len(tokens) > block_size:
+                tokens = tokens[:block_size]
+            else:
+                pad_len = block_size - len(tokens)
+                tokens = np.concatenate([tokens, np.zeros(pad_len, dtype=np.int64)])
+            x_t = torch.tensor(tokens[:-1], dtype=torch.long, device=device).unsqueeze(0)
+            _, sentiment_logits, _ = model(x_t, sentiment_labels=None, targets=None)
+            pred_sent = sentiment_logits.argmax(dim=1).item()
+            preds.append(pred_sent)
+            gts.append(label)
+    from sklearn.metrics import confusion_matrix, classification_report
+    cm = confusion_matrix(gts, preds, labels=[0, 1, 2])
+    print("Confusion Matrix (rows=TRUE, cols=PRED) [neg, neu, pos]:")
+    print(cm)
+    target_names = ["Negative", "Neutral", "Positive"]
+    print("\nClassification Report:")
+    print(classification_report(gts, preds, target_names=target_names, digits=4))
+    return cm
 
 #####################################
-# Ana Eğitim Döngüsü
+# Ana Test Döngüsü
 #####################################
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("config_path", type=str, help="Konfigürasyon dosyasının yolu")
-    parser.add_argument("--compile", type=str, default=None, help="Model derleme opsiyonu (True/False)")
-    parser.add_argument("--save_path", type=str, default="checkpoint.pt", help="Kaydedilecek model dosyası")
+    parser.add_argument("--checkpoint", type=str, required=True, help="Yüklemek için model checkpoint dosyası")
     args = parser.parse_args()
 
-    # Konfigürasyon dosyasını dinamik olarak yükle
+    # Konfigürasyon dosyasını yükle
     spec = importlib.util.spec_from_file_location("config", args.config_path)
     config_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(config_module)
 
-    if args.compile is not None:
-        config_module.compile_model = args.compile.lower() == 'true'
-
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Using device =", device)
 
-    # Konfigürasyon parametreleri
     data_dir      = config_module.data_dir
     block_size    = config_module.block_size
-    batch_size    = config_module.batch_size
-    max_iters     = config_module.max_iters
-    eval_interval = config_module.eval_interval
-    eval_iters    = config_module.eval_iters
-    learning_rate = config_module.learning_rate
-    weight_decay  = config_module.weight_decay
 
-    # Veri yükleme
-    (train_data, train_labels), (val_data, val_labels), _ = load_data(data_dir)
+    # Veri yükleme (test verileri de dahil)
+    (_, _), (_, _), (test_data, test_labels) = load_data(data_dir)
+    if test_data is None or test_labels is None:
+        print("Test verileri bulunamadı!")
+        return
 
     # meta.pkl'den vocab_size bilgisini güncelle
     meta_path = os.path.join(data_dir, 'meta.pkl')
@@ -103,7 +111,8 @@ def main():
     vocab_size = meta.get('vocab_size', config_module.vocab_size)
     print("Loaded vocab_size =", vocab_size)
 
-    # Model konfigürasyonu ve oluşturma
+    # Model konfigürasyonu oluşturma
+    from model import GPTConfig
     model_config = GPTConfig(
         block_size=block_size,
         vocab_size=vocab_size,
@@ -113,31 +122,17 @@ def main():
         dropout=config_module.dropout,
         bias=config_module.bias
     )
+    from model import GPT
     model = GPT(model_config)
     model.to(device)
 
-    optimizer = model.configure_optimizers(weight_decay, learning_rate, (0.9, 0.99), device)
+    # Checkpoint yükleme
+    checkpoint = torch.load(args.checkpoint, map_location=device)
+    model.load_state_dict(checkpoint)
+    print(f"Checkpoint yüklendi: {args.checkpoint}")
 
-    # Eğitim döngüsü
-    for iter_num in range(max_iters):
-        X, Y, S = get_batch_conversations(train_data, train_labels, batch_size, block_size, device)
-        _, _, loss = model(X, sentiment_labels=S, targets=Y)
-        optimizer.zero_grad()
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        optimizer.step()
-
-       
-        if iter_num % 50 == 0:
-            print(f"iter {iter_num}: loss {loss.item():.4f}")
-
-        if iter_num > 0 and iter_num % eval_interval == 0:
-            val_loss = estimate_loss(model, val_data, val_labels, batch_size, block_size, device, eval_iters=eval_iters)
-            print(f"Step {iter_num}: val_loss = {val_loss:.4f}")
-
-    # Eğitim sonunda checkpoint kaydet
-    torch.save(model.state_dict(), args.save_path)
-    print(f"Model kaydedildi: {args.save_path}")
+    # Test verileri üzerinde değerlendirme
+    evaluate_model_on_test(model, test_data, test_labels, block_size, device)
 
 if __name__ == '__main__':
     main()

@@ -163,7 +163,10 @@ class GPT(nn.Module):
                 ignore_index=-1
             )
         if sentiment_labels is not None:
-            loss_sent = nn.functional.cross_entropy(sentiment_logits, sentiment_labels)
+            # Weighted loss için ağırlıklar: [1.0, 1.0, 3.0] örneğin,
+            # negatif ve nötr için 1, pozitif için 3.0 ağırlık veriliyor.
+            sentiment_weights = torch.tensor([1.0, 1.0, 10.0], device=device)
+            loss_sent = nn.functional.cross_entropy(sentiment_logits, sentiment_labels, weight=sentiment_weights)
 
         if loss_lm is not None and loss_sent is not None:
             loss = loss_lm + loss_sent

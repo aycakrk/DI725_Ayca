@@ -1,44 +1,22 @@
-# Output directory for saving models
-out_dir = 'out-customer'
-eval_interval = 250  # evaluate every 250 iterations
-eval_iters = 200
-log_interval = 50  # print training stats every 50 iterations
+# Eğitim ve model parametreleri
 
-# Saving checkpoints only when validation improves
-always_save_checkpoint = False
+# Veri ve model parametreleri
+data_dir = '/content/DI725_Ayca/assignment_1/data/customer_service'
+block_size = 128
+batch_size = 16
+max_iters = 2000
+eval_interval = 200
+eval_iters = 50
+learning_rate = 1e-3
+weight_decay = 1e-2
 
-# WandB logging (disable if you are not using Weights & Biases)
-wandb_log = True
-wandb_project = 'customer'
-wandb_run_name = 'mini-gpt'
+# Modelin yapılandırması için
+vocab_size = 2000  # Bu değer meta.pkl'den güncellenecektir
+n_layer = 4
+n_head = 4
+n_embd = 256
+dropout = 0.1
+bias = True
 
-# Dataset and data-related settings
-dataset = 'customer_service'  # your dataset name
-gradient_accumulation_steps = 1  # Accumulate gradients over multiple batches
-batch_size = 64  # Number of samples per batch
-block_size = 256  # Maximum context size for the model (length of the conversation)
-
-# Model configuration
-n_layer = 6
-n_head = 6
-n_embd = 384
-dropout = 0.2  # High dropout to prevent overfitting since it's a small model
-
-# Training parameters
-learning_rate = 1e-3  # Higher learning rate since it's a small model
-max_iters = 2000  # Number of training iterations
-lr_decay_iters = 2000  # Make equal to max_iters for a linear decay schedule
-min_lr = 1e-4  # Minimum learning rate
-beta2 = 0.99  # Momentum term for AdamW optimizer
-
-warmup_iters = 100  # Number of warmup iterations to gradually increase learning rate
-
-# Device settings
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-compile = False  # Do not torch.compile() the model if you face issues
-
-# New addition for sentiment classification
-num_sentiment_classes = 3  # You have 3 classes: Positive, Negative, Neutral
-
-# This will be detected by your model
-vocab_size = 96  # This is the number of unique characters in your dataset
+# Ekstra ayarlar
+compile_model = False  # Komut satırından --compile ile override edilebilir
