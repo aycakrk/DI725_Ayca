@@ -6,6 +6,7 @@ import pickle
 import random
 import numpy as np
 import torch
+import wandb  # wandb importu
 
 from model_weighted_loss import GPT, GPTConfig
 
@@ -83,6 +84,31 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Using device =", device)
 
+    # Yalnızca gerekli konfigürasyon parametrelerini al
+    config_dict = {
+        'data_dir': config_module.data_dir,
+        'block_size': config_module.block_size,
+        'batch_size': config_module.batch_size,
+        'max_iters': config_module.max_iters,
+        'eval_interval': config_module.eval_interval,
+        'eval_iters': config_module.eval_iters,
+        'learning_rate': config_module.learning_rate,
+        'weight_decay': config_module.weight_decay,
+        'vocab_size': config_module.vocab_size,
+        'n_layer': config_module.n_layer,
+        'n_head': config_module.n_head,
+        'n_embd': config_module.n_embd,
+        'dropout': config_module.dropout,
+        'bias': config_module.bias,
+        'compile_model': config_module.compile_model
+    }
+
+    # W&B başlatma
+    wandb.init(
+        project=getattr(config_module, "wandb_project", "default_project"),
+        config=config_dict
+    )
+
     # Konfigürasyon parametreleri
     data_dir      = config_module.data_dir
     block_size    = config_module.block_size
@@ -127,17 +153,22 @@ def main():
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         optimizer.step()
 
-       
+        # Metrikleri wandb'ye loglama
+        wandb.log({"train_loss": loss.item(), "iteration": iter_num})
+
         if iter_num % 50 == 0:
             print(f"iter {iter_num}: loss {loss.item():.4f}")
 
         if iter_num > 0 and iter_num % eval_interval == 0:
             val_loss = estimate_loss(model, val_data, val_labels, batch_size, block_size, device, eval_iters=eval_iters)
             print(f"Step {iter_num}: val_loss = {val_loss:.4f}")
+            wandb.log({"val_loss": val_loss, "iteration": iter_num})
 
     # Eğitim sonunda checkpoint kaydet
     torch.save(model.state_dict(), args.save_path)
     print(f"Model kaydedildi: {args.save_path}")
+    wandb.save(args.save_path)
+    wandb.finish()
 
 if __name__ == '__main__':
     main()
