@@ -1,1 +1,1 @@
-# DI725_Assignment_1
+# DI725_Assignments
