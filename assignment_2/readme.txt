@@ -1,0 +1,1 @@
+In this assignment we will be detecting objects in a remote sensing dataset. 
